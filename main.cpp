@@ -29,9 +29,12 @@ int main()
 {
 
     InitWindow(800, 450, "Game");
+    InitAudioDevice();
     GuiLoadStyleDark();
     SetTargetFPS(60);
     ToggleFullscreen();
+
+    Sound boop = LoadSound("D:\\boop\\assets\\boop.mp3");
 
     int width = GetScreenWidth();
     int height = GetScreenHeight();
@@ -99,10 +102,10 @@ int main()
                     int x = xOffset + (col * TILE_SIZE);
                     int y = yOffset + (row * TILE_SIZE);
 
-                    if (gridMap[row][col] == 1)
-                    {
-                        DrawRectangle(x, y, TILE_SIZE, TILE_SIZE, wallColor);
-                    }
+                    //if (gridMap[row][col] == 1)
+                    //{
+                    //    DrawRectangle(x, y, TILE_SIZE, TILE_SIZE, wallColor);
+                    //}
 
                     DrawRectangleLines(x, y, TILE_SIZE, TILE_SIZE, gridLine);
                 }
@@ -145,26 +148,47 @@ int main()
                         {
                             selectIndex = clickedIndex;
                         }
-                        
-                    }
+                        else if(selectIndex != -1)
+                        {
+
+                            int colDist = abs(clickRow - activeUnit[selectIndex].row);
+                            int rowDist = abs(clickCol - activeUnit[selectIndex].col);
+
+                            int totalDist = colDist + rowDist;
+
+                            if (totalDist == 1 || (colDist == 1 && rowDist ==1))
+                            {
+                                activeUnit[clickedIndex].isalive = false;
+                                PlaySound(boop);
+                                activeUnit[selectIndex].col = clickCol;
+                                activeUnit[selectIndex].row = clickRow;
+                                selectIndex = -1;
+
+                            }
+                        } 
+                    }  
                     else
                     {
-
-                        int colDist = abs(clickRow - activeUnit[selectIndex].row);
-                        int rowDist = abs(clickCol - activeUnit[selectIndex].col);
-
-                        int totalDist = colDist + rowDist;
-
-                        if (totalDist == 1 || (colDist == 1 && rowDist ==1))
-                        {
-                            activeUnit[selectIndex].col = clickCol;
-                            activeUnit[selectIndex].row = clickRow;
-                            selectIndex = -1;
-                        }
-                        // logic to kill player
+                        if (selectIndex != -1)
+                            {
+                                int colDist = abs(clickRow -activeUnit[selectIndex].row);
+                                int rowlDist = abs(clickCol -activeUnit[selectIndex].col);
+                            
+                                int totalDist = colDist + rowlDist;
+                            
+                                if (totalDist == 1 || (colDist == 1 && rowlDist == 1))
+                                {
+                                    activeUnit[selectIndex].row = clickRow;
+                                    activeUnit[selectIndex].col = clickCol;
+                                    selectIndex = -1;
+                                }
                         
-                    }   
+                            }
+                    
+                    }
                 }
+                
+
             }
 
             // drawing units
@@ -189,10 +213,11 @@ int main()
                 }
 
                 DrawRectangle(x + padding, y + padding, TILE_SIZE - (padding * 2), TILE_SIZE - (padding * 2), unitColor);
-
+                
                 if (i == selectIndex)
                 {
-                    DrawRectangle(x,y,TILE_SIZE,TILE_SIZE,YELLOW);
+                    DrawRectangle(x,y,TILE_SIZE,TILE_SIZE,WHITE);
+                    DrawRectangle(x + padding, y + padding, TILE_SIZE - (padding * 2), TILE_SIZE - (padding * 2), unitColor);
                 }
        
             }
