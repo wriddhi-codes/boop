@@ -36,8 +36,8 @@ int main()
     SetTargetFPS(60);
     ToggleFullscreen();
 
-    Sound boop = LoadSound("D:\\boop\\assets\\boop.mp3");
-
+    Sound boop = LoadSound("assets\\boop.mp3");
+    Sound move = LoadSound("assets\\move.mp3");
     int width = GetScreenWidth();
     int height = GetScreenHeight();
 
@@ -131,15 +131,10 @@ int main()
                 {
                     currentScreen = Appscreen::VICTORY;
                 }
-                
-                
-                
-                
             }
-            
 
             // selecting pieces
-            if (isPlayerTurn)
+            /*if (isPlayerTurn)
             {
                 DrawText("Blue's Turn", float(width / 2) - float(MeasureText("Blue's Turn",120) / 2), 10, 120, BLUE);
             }
@@ -147,7 +142,7 @@ int main()
             {
                 DrawText("Red's Turn", float(width / 2) - float(MeasureText("Red's Turn",120) / 2), 10, 120, RED);
             }
-
+            */
             if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && isPlayerTurn)
             {
 
@@ -216,92 +211,92 @@ int main()
                             {
                                 activeUnit[selectIndex].row = clickRow;
                                 activeUnit[selectIndex].col = clickCol;
+                                PlaySound(move);
                                 selectIndex = -1;
                                 isPlayerTurn = false;
                             }
                         }
                     }
                 }
-
-                if (!isPlayerTurn)
+            }
+            if (!isPlayerTurn)
+            {
+                int redIndex = -1;
+                for (int i = 0; i < MAX_UNITS; i++)
                 {
-                    int redIndex = -1;
-                    for (int i = 0; i < MAX_UNITS; i++)
+                    if (activeUnit[i].isalive && !activeUnit[i].isblue)
                     {
                         if (activeUnit[i].isalive && !activeUnit[i].isblue)
                         {
-                            if (activeUnit[i].isalive && !activeUnit[i].isblue)
+                            redIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (redIndex != -1)
+                {
+                    int targetIndex = -1;
+                    int minDist = 6767;
+
+                    for (int i = 0; i < MAX_UNITS; i++)
+                    {
+                        if (activeUnit[i].isalive && activeUnit[i].isblue)
+                        {
+                            int colDist = abs(activeUnit[i].col - activeUnit[redIndex].col);
+                            int rowDist = abs(activeUnit[i].row - activeUnit[redIndex].row);
+                            int totalDist = colDist + rowDist;
+
+                            if (totalDist < minDist)
                             {
-                                redIndex = i;
-                                break;
+                                minDist = totalDist;
+                                targetIndex = i;
                             }
                         }
                     }
 
-                    if (redIndex != -1)
+                    if (targetIndex != -1)
                     {
-                        int targetIndex = -1;
-                        int minDist = 6767;
+                        int colDist = abs(activeUnit[targetIndex].col - activeUnit[redIndex].col);
+                        int rowDist = abs(activeUnit[targetIndex].row - activeUnit[redIndex].row);
 
-                        for (int i = 0; i < MAX_UNITS; i++)
+                        if (minDist == 1 || (colDist == 1 && rowDist == 1))
                         {
-                            if (activeUnit[i].isalive && activeUnit[i].isblue)
-                            {
-                                int colDist = abs(activeUnit[i].col - activeUnit[redIndex].col);
-                                int rowDist = abs(activeUnit[i].row - activeUnit[redIndex].row);
-                                int totalDist = colDist + rowDist;
-
-                                if (totalDist < minDist)
-                                {
-                                    minDist = totalDist;
-                                    targetIndex = i;
-                                }
-                            }
+                            activeUnit[targetIndex].isalive = false;
+                            PlaySound(boop);
+                            activeUnit[redIndex].col = activeUnit[targetIndex].col;
+                            activeUnit[redIndex].row = activeUnit[targetIndex].row;
                         }
 
-                        if (targetIndex != -1)
+                        else
                         {
-                            int colDist = abs(activeUnit[targetIndex].col - activeUnit[redIndex].col);
-                            int rowDist = abs(activeUnit[targetIndex].row - activeUnit[redIndex].row);
-
-                            if (minDist == 1 || (colDist == 1 &&rowDist == 1))
+                            if (colDist > rowDist)
                             {
-                                activeUnit[targetIndex].isalive = false;
-                                PlaySound(boop);
-                                activeUnit[redIndex].col = activeUnit[targetIndex].col;
-                                activeUnit[redIndex].row = activeUnit[targetIndex].row;
-                            }
-
-                            else
-                            {
-                                if (colDist > rowDist)
+                                if (activeUnit[targetIndex].col > activeUnit[redIndex].col)
                                 {
-                                    if (activeUnit[targetIndex].col > activeUnit[redIndex].col)
-                                    {
-                                        activeUnit[redIndex].col += 1;
-                                    }
-                                    else
-                                    {
-                                        activeUnit[redIndex].col -= 1;
-                                    }
+                                    activeUnit[redIndex].col += 1;
                                 }
                                 else
                                 {
-                                    if (activeUnit[targetIndex].row > activeUnit[redIndex].row)
-                                    {
-                                        activeUnit[redIndex].row += 1;
-                                    }
-                                    else
-                                    {
-                                        activeUnit[redIndex].row -= 1;
-                                    }
+                                    activeUnit[redIndex].col -= 1;
+                                }
+                            }
+                            else
+                            {
+                                if (activeUnit[targetIndex].row > activeUnit[redIndex].row)
+                                {
+                                    activeUnit[redIndex].row += 1;
+                                }
+                                else
+                                {
+                                    activeUnit[redIndex].row -= 1;
                                 }
                             }
                         }
                     }
-
-                    isPlayerTurn = true;
                 }
+
+                isPlayerTurn = true;
             }
 
             // drawing units
@@ -352,18 +347,18 @@ int main()
         }
 
         case Appscreen::DEFEAT:
-            DrawText("YOU LOST !!!!",float(width/2)-float(MeasureText("YOU LOST !!!!",200)/2),float(height/2)-float(200/2),200,DARKGRAY);
+            DrawText("YOU LOST !!!!", float(width / 2) - float(MeasureText("YOU LOST !!!!", 200) / 2), float(height / 2) - float(200 / 2), 200, DARKGRAY);
 
-            if (GuiButton(Rectangle{20,20,150,70},"BACK"))
+            if (GuiButton(Rectangle{20, 20, 150, 70}, "BACK"))
             {
                 currentScreen = Appscreen::MAIN_MENU;
             }
             break;
-        
-        case Appscreen::VICTORY:
-            DrawText("YOU WON !!!!",float(width/2)-float(MeasureText("YOW WON !!!!",200)/2),float(height/2)-float(200/2),200,GOLD);
 
-            if (GuiButton(Rectangle{20,20,150,70},"BACK"))
+        case Appscreen::VICTORY:
+            DrawText("YOU WON !!!!", float(width / 2) - float(MeasureText("YOW WON !!!!", 200) / 2), float(height / 2) - float(200 / 2), 200, GOLD);
+
+            if (GuiButton(Rectangle{20, 20, 150, 70}, "BACK"))
             {
                 currentScreen = Appscreen::MAIN_MENU;
             }
