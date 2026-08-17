@@ -15,7 +15,9 @@ enum class Appscreen
 {
     MAIN_MENU,
     RULES,
-    GAMEPLAY
+    GAMEPLAY,
+    VICTORY,
+    DEFEAT
 };
 
 struct Unit
@@ -107,14 +109,43 @@ int main()
                 }
             }
 
+            int blueUnit = 3;
+            int redUnit = 3;
+
+            for (int i = 0; i < MAX_UNITS; i++)
+            {
+                if (activeUnit[i].isblue && !activeUnit[i].isalive)
+                {
+                    blueUnit -= 1;
+                }
+                else if (!activeUnit[i].isblue && !activeUnit[i].isalive)
+                {
+                    redUnit -= 1;
+                }
+
+                if (blueUnit == 0)
+                {
+                    currentScreen = Appscreen::DEFEAT;
+                }
+                else if (redUnit == 0)
+                {
+                    currentScreen = Appscreen::VICTORY;
+                }
+                
+                
+                
+                
+            }
+            
+
             // selecting pieces
             if (isPlayerTurn)
             {
-                DrawText("Blue's Turn", float(width / 2) - float(GuiGetTextWidth("Blue's Turn") / 2), 10, 120, BLUE);
+                DrawText("Blue's Turn", float(width / 2) - float(MeasureText("Blue's Turn",120) / 2), 10, 120, BLUE);
             }
             else
             {
-                DrawText("Red's Turn", float(width / 2) - float(GuiGetTextWidth("Red's Turn") / 2), 10, 120, RED);
+                DrawText("Red's Turn", float(width / 2) - float(MeasureText("Red's Turn",120) / 2), 10, 120, RED);
             }
 
             if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && isPlayerTurn)
@@ -319,6 +350,24 @@ int main()
             }
             break;
         }
+
+        case Appscreen::DEFEAT:
+            DrawText("YOU LOST !!!!",float(width/2)-float(MeasureText("YOU LOST !!!!",200)/2),float(height/2)-float(200/2),200,DARKGRAY);
+
+            if (GuiButton(Rectangle{20,20,150,70},"BACK"))
+            {
+                currentScreen = Appscreen::MAIN_MENU;
+            }
+            break;
+        
+        case Appscreen::VICTORY:
+            DrawText("YOU WON !!!!",float(width/2)-float(MeasureText("YOW WON !!!!",200)/2),float(height/2)-float(200/2),200,GOLD);
+
+            if (GuiButton(Rectangle{20,20,150,70},"BACK"))
+            {
+                currentScreen = Appscreen::MAIN_MENU;
+            }
+            break;
         }
         EndDrawing();
     }
