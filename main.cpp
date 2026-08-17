@@ -35,6 +35,7 @@ int main()
     GuiLoadStyleDark();
     SetTargetFPS(60);
     ToggleFullscreen();
+    GuiSetStyle(DEFAULT,TEXT_ALIGNMENT,TEXT_ALIGN_CENTER);
 
     Sound boop = LoadSound("assets\\boop.mp3");
     Sound move = LoadSound("assets\\move.mp3");
@@ -338,7 +339,7 @@ int main()
             }
             if (GuiButton(Rectangle{20, 20, 150, 70}, "BACK"))
             {
-                currentScreen = Appscreen::MAIN_MENU;
+                currentScreen = Appscreen::MAIN_MENU;            
             }
 
             break;
@@ -348,6 +349,15 @@ int main()
         {
             StopSound(music);
             DrawRectangleLines(float(width / 2) - 800, float(height / 2) - 400, 1600, 800, gridLine);
+            const char* rule1 = "One unit movement is allowed per turn.";
+            const char* rule2 = "No piece is allowed to go out of bounds.";
+            const char* rule3 = "The game ends when there are no more pieces of any one team left.";
+            const char* rule4 = "Each player can eliminate(boop) opponent pieces when it is in contact.";
+
+            DrawText(rule1,float(width/2)-750,float(height/2)-250,40,GOLD);
+            DrawText(rule2,float(width/2)-750,float(height/2)-100,40,GOLD);
+            DrawText(rule3,float(width/2)-750,float(height/2)+50,40,GOLD);
+            DrawText(rule4,float(width/2)-750,float(height/2)+200,40,GOLD);
             if (GuiButton(Rectangle{20, 20, 150, 70}, "BACK"))
             {
                 currentScreen = Appscreen::MAIN_MENU;
