@@ -38,6 +38,7 @@ int main()
 
     Sound boop = LoadSound("assets\\boop.mp3");
     Sound move = LoadSound("assets\\move.mp3");
+    Sound music = LoadSound("assets\\music.mp3");
     int width = GetScreenWidth();
     int height = GetScreenHeight();
 
@@ -67,6 +68,12 @@ int main()
         {
         case Appscreen::MAIN_MENU:
         {
+            if (!IsSoundPlaying(music))
+            {
+                PlaySound(music);
+            }
+            
+            
             const char *title = "BOOP";
             int textWidth = MeasureText(title, 120);
             Color titleColor = GetColor(GuiGetStyle(DEFAULT, TEXT_COLOR_NORMAL));
@@ -84,7 +91,8 @@ int main()
         }
 
         case Appscreen::GAMEPLAY:
-        {
+        {   
+            StopSound(music);
             int gridWidth = COLS * TILE_SIZE;
             int gridHeight = ROWS * TILE_SIZE;
 
@@ -338,6 +346,7 @@ int main()
 
         case Appscreen::RULES:
         {
+            StopSound(music);
             DrawRectangleLines(float(width / 2) - 800, float(height / 2) - 400, 1600, 800, gridLine);
             if (GuiButton(Rectangle{20, 20, 150, 70}, "BACK"))
             {
@@ -347,6 +356,7 @@ int main()
         }
 
         case Appscreen::DEFEAT:
+            StopSound(music);
             DrawText("YOU LOST !!!!", float(width / 2) - float(MeasureText("YOU LOST !!!!", 200) / 2), float(height / 2) - float(200 / 2), 200, DARKGRAY);
 
             if (GuiButton(Rectangle{20, 20, 150, 70}, "BACK"))
@@ -356,6 +366,7 @@ int main()
             break;
 
         case Appscreen::VICTORY:
+            StopSound(music);
             DrawText("YOU WON !!!!", float(width / 2) - float(MeasureText("YOW WON !!!!", 200) / 2), float(height / 2) - float(200 / 2), 200, GOLD);
 
             if (GuiButton(Rectangle{20, 20, 150, 70}, "BACK"))
