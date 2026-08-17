@@ -48,17 +48,13 @@ int main()
 
     int gridMap[ROWS][COLS] = {0};
 
-    //gridMap[3][5]=1;
-    //gridMap[4][5]=1;
-    //gridMap[5][5]=1;
     Color wallColor = GetColor(GuiGetStyle(DEFAULT, BASE_COLOR_NORMAL));
 
     Unit activeUnit[MAX_UNITS] = {
-        {2,1,true,true},{2,3,true,true},{2,5,true,true},
-        {11,1,false,true},{11,3,false,true},{11,5,false,true}
-    };
+        {2, 1, true, true}, {2, 3, true, true}, {2, 5, true, true}, {11, 1, false, true}, {11, 3, false, true}, {11, 5, false, true}};
 
     int selectIndex = -1;
+    bool isPlayerTurn = true;
 
     while (!WindowShouldClose())
     {
@@ -102,19 +98,28 @@ int main()
                     int x = xOffset + (col * TILE_SIZE);
                     int y = yOffset + (row * TILE_SIZE);
 
-                    //if (gridMap[row][col] == 1)
+                    // if (gridMap[row][col] == 1)
                     //{
-                    //    DrawRectangle(x, y, TILE_SIZE, TILE_SIZE, wallColor);
-                    //}
+                    //     DrawRectangle(x, y, TILE_SIZE, TILE_SIZE, wallColor);
+                    // }
 
                     DrawRectangleLines(x, y, TILE_SIZE, TILE_SIZE, gridLine);
                 }
             }
 
             // selecting pieces
-
-            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            if (isPlayerTurn)
             {
+                DrawText("Blue's Turn", float(width / 2) - float(GuiGetTextWidth("Blue's Turn") / 2), 10, 120, BLUE);
+            }
+            else
+            {
+                DrawText("Red's Turn", float(width / 2) - float(GuiGetTextWidth("Red's Turn") / 2), 10, 120, RED);
+            }
+
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && isPlayerTurn)
+            {
+
                 int mouseX = GetMouseX();
                 int mouseY = GetMouseY();
 
@@ -126,7 +131,7 @@ int main()
 
                 if (clickCol >= 0 && clickCol < COLS && clickRow >= 0 && clickRow < ROWS)
                 {
-                    // check if a unit is standing there or not 
+                    // check if a unit is standing there or not
                     int clickedIndex = -1;
                     for (int i = 0; i < MAX_UNITS; i++)
                     {
@@ -134,7 +139,7 @@ int main()
                         {
                             continue;
                         }
-                        
+
                         if (activeUnit[i].col == clickCol && activeUnit[i].row == clickRow)
                         {
                             clickedIndex = i;
@@ -148,7 +153,7 @@ int main()
                         {
                             selectIndex = clickedIndex;
                         }
-                        else if(selectIndex != -1)
+                        else if (selectIndex != -1)
                         {
 
                             int colDist = abs(clickRow - activeUnit[selectIndex].row);
@@ -156,39 +161,116 @@ int main()
 
                             int totalDist = colDist + rowDist;
 
-                            if (totalDist == 1 || (colDist == 1 && rowDist ==1))
+                            if (totalDist == 1 || (colDist == 1 && rowDist == 1))
                             {
                                 activeUnit[clickedIndex].isalive = false;
                                 PlaySound(boop);
                                 activeUnit[selectIndex].col = clickCol;
                                 activeUnit[selectIndex].row = clickRow;
                                 selectIndex = -1;
-
+                                isPlayerTurn = false;
                             }
-                        } 
-                    }  
+                        }
+                    }
                     else
                     {
                         if (selectIndex != -1)
+                        {
+                            int colDist = abs(clickRow - activeUnit[selectIndex].row);
+                            int rowlDist = abs(clickCol - activeUnit[selectIndex].col);
+
+                            int totalDist = colDist + rowlDist;
+
+                            if (totalDist == 1 || (colDist == 1 && rowlDist == 1))
                             {
-                                int colDist = abs(clickRow -activeUnit[selectIndex].row);
-                                int rowlDist = abs(clickCol -activeUnit[selectIndex].col);
-                            
-                                int totalDist = colDist + rowlDist;
-                            
-                                if (totalDist == 1 || (colDist == 1 && rowlDist == 1))
-                                {
-                                    activeUnit[selectIndex].row = clickRow;
-                                    activeUnit[selectIndex].col = clickCol;
-                                    selectIndex = -1;
-                                }
-                        
+                                activeUnit[selectIndex].row = clickRow;
+                                activeUnit[selectIndex].col = clickCol;
+                                selectIndex = -1;
+                                isPlayerTurn = false;
                             }
-                    
+                        }
                     }
                 }
-                
 
+                if (!isPlayerTurn)
+                {
+                    int redIndex = -1;
+                    for (int i = 0; i < MAX_UNITS; i++)
+                    {
+                        if (activeUnit[i].isalive && !activeUnit[i].isblue)
+                        {
+                            if (activeUnit[i].isalive && !activeUnit[i].isblue)
+                            {
+                                redIndex = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (redIndex != -1)
+                    {
+                        int targetIndex = -1;
+                        int minDist = 6767;
+
+                        for (int i = 0; i < MAX_UNITS; i++)
+                        {
+                            if (activeUnit[i].isalive && activeUnit[i].isblue)
+                            {
+                                int colDist = abs(activeUnit[i].col - activeUnit[redIndex].col);
+                                int rowDist = abs(activeUnit[i].row - activeUnit[redIndex].row);
+                                int totalDist = colDist + rowDist;
+
+                                if (totalDist < minDist)
+                                {
+                                    minDist = totalDist;
+                                    targetIndex = i;
+                                }
+                            }
+                        }
+
+                        if (targetIndex != -1)
+                        {
+                            int colDist = abs(activeUnit[targetIndex].col - activeUnit[redIndex].col);
+                            int rowDist = abs(activeUnit[targetIndex].row - activeUnit[redIndex].row);
+
+                            if (minDist == 1 || (colDist == 1 &&rowDist == 1))
+                            {
+                                activeUnit[targetIndex].isalive = false;
+                                PlaySound(boop);
+                                activeUnit[redIndex].col = activeUnit[targetIndex].col;
+                                activeUnit[redIndex].row = activeUnit[targetIndex].row;
+                            }
+
+                            else
+                            {
+                                if (colDist > rowDist)
+                                {
+                                    if (activeUnit[targetIndex].col > activeUnit[redIndex].col)
+                                    {
+                                        activeUnit[redIndex].col += 1;
+                                    }
+                                    else
+                                    {
+                                        activeUnit[redIndex].col -= 1;
+                                    }
+                                }
+                                else
+                                {
+                                    if (activeUnit[targetIndex].row > activeUnit[redIndex].row)
+                                    {
+                                        activeUnit[redIndex].row += 1;
+                                    }
+                                    else
+                                    {
+                                        activeUnit[redIndex].row -= 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    isPlayerTurn = true;
+                }
             }
 
             // drawing units
@@ -199,8 +281,8 @@ int main()
                     continue;
                 }
 
-                int x = xOffset + (activeUnit[i].col *TILE_SIZE);
-                int y = yOffset + (activeUnit[i].row *TILE_SIZE);
+                int x = xOffset + (activeUnit[i].col * TILE_SIZE);
+                int y = yOffset + (activeUnit[i].row * TILE_SIZE);
                 int padding = 15;
                 Color unitColor;
                 if (activeUnit[i].isblue)
@@ -213,13 +295,12 @@ int main()
                 }
 
                 DrawRectangle(x + padding, y + padding, TILE_SIZE - (padding * 2), TILE_SIZE - (padding * 2), unitColor);
-                
+
                 if (i == selectIndex)
                 {
-                    DrawRectangle(x,y,TILE_SIZE,TILE_SIZE,WHITE);
+                    DrawRectangle(x, y, TILE_SIZE, TILE_SIZE, WHITE);
                     DrawRectangle(x + padding, y + padding, TILE_SIZE - (padding * 2), TILE_SIZE - (padding * 2), unitColor);
                 }
-       
             }
             if (GuiButton(Rectangle{20, 20, 150, 70}, "BACK"))
             {
@@ -231,14 +312,12 @@ int main()
 
         case Appscreen::RULES:
         {
-            
-            GuiDrawRectangle(Rectangle{float(width / 2) - 400, float(height / 2) - 100, float(width) - 400, float(height) - 200}, 1, gridLine, wall);
+            DrawRectangleLines(float(width / 2) - 800, float(height / 2) - 400, 1600, 800, gridLine);
             if (GuiButton(Rectangle{20, 20, 150, 70}, "BACK"))
             {
                 currentScreen = Appscreen::MAIN_MENU;
             }
             break;
-
         }
         }
         EndDrawing();
