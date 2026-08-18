@@ -24,10 +24,22 @@ The blue pieces is the player itself and the red ones are the opponents which is
 * if in contact with any red piece , click over it to boop the piece(kill)
 * only one action per turn , boop or move.
 
-## Compile cmd using g++
+## Compile cmd using g++(Windows)
 > g++ .\main.cpp -o gane.exe -I"[head file location]" -L"[library file location]" -lraylib -lopengl32 -lgdi32 -lwinmm
 
 >.\game.exe
+
+## To build the game on other deivces 
+
+### Linux(g++)
+>g++ main.cpp -o game -I"[head file location]" -L"[library file location]" -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+
+>./game
+
+### macOS(clang++)
+>clang++ main.cpp -o game -I$(brew --prefix raylib)/include -L$(brew --prefix raylib)/lib -lraylib -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+
+>./game
 
 
 ## Game Screenshots
