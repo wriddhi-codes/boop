@@ -1,8 +1,11 @@
 # BOOP
 
+## Description
 It is a minimalist , tactical grid game built from scratch in cpp using [Raylib](https://www.raylib.com)
 
 The blue pieces is the player itself and the red ones are the opponents which is a bot.
+## Inspiration
+I wanted to build a minimal design game as my first game , also I love playing board/grid games .
 
 ## Features
 * the game has a grid of 14 x 7
@@ -11,11 +14,11 @@ The blue pieces is the player itself and the red ones are the opponents which is
 * it follows a turn based mechanism
 * uses Raygui for dark mode and clean interface.
 
-## Requirments
+## Technologies Used
 
 * [Raylib](https://github.com/raysan5/raylib)
 * [RayGUI](https://github.com/raysan5/raygui)
-* A C++ compiler
+* C++
 
 ## How to Play 
 
