@@ -1,9 +1,13 @@
 # BOOP
 
 ## Description
-It is a minimalist , tactical grid game built from scratch in cpp using [Raylib](https://www.raylib.com)
+It is a minimalist , tactical grid game built from scratch in cpp using [Raylib](https://www.raylib.com).
 
-The blue pieces is the player itself and the red ones are the opponents which is a bot.
+This project focuses on a raw grid based mechanic. You command the blue units in spatial puzzle of positioning and foresight.
+
+It forces you to manipulate the board state and anticipate enemy  pathfinding and trap opponents to secure the victory.
+
+
 ## Inspiration
 I wanted to build a minimal design game as my first game , also I love playing board/grid games .
 
